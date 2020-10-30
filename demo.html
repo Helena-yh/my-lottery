@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>挖财钱堂学院理财小白训练</title>
+	<meta name="screen-orientation" content="portrait">
+	<meta name="x5-orientation" content="portrait">
+	<link rel="stylesheet" href="./chatroom.css">
+</head>
+
+<body>
+	<div class="rc-main">
+		<div class="rc-video-body">
+			<video muted src="video1.mp4" autoplay loop webkit-playsinline="true" x-webkit-airplay="true" playsinline="true"
+				x5-video-player-type="h5" x5-video-player-fullscreen="true" preload="auto" webkit-playsinline="true"
+				x5-playsinline="true" playsinline="true"></video>
+		</div>
+
+		<div class="rc-chat">
+			<div class="rc-chat-main">
+				<img class="rc-chat-img" src="./like.svg">
+				<div class="rc-chat-info">
+					<span class="rc-chat-name">[直播回顾]</span>
+					<span class="rc-chat-num">4208 人次</span>
+				</div>
+			</div>
+		</div>
+		<div class="rc-user-join">
+			<div class="rc-user-main">
+				<img class="rc-user-img" src="./like.svg">
+				<div class="rc-user-info">
+					<span class="rc-user-name">无懈可击...等人</span>
+					<span class="rc-user-num">进入了直播间</span>
+				</div>
+			</div>
+		</div>
+		<div class="rc-chatroom">
+			<div class="rc-message-list-wrapper">
+				<div class="rc-message-list" id="rc-message-list"></div>
+			</div>
+
+			<div class="rc-chatroom-user">
+				<!-- <span class="rc-chatroom-emoji" id="rc-chatroom-emoji">😄</span> -->
+				<div class="rc-emoji-panel" id="rc-emoji-panel"></div>
+				<input class="rc-chatroom-input" id="rc-chatroom-input" type="text" placeholder="说点什么..." onfocus="onfouce()">
+				<!-- <input class="rc-chatroom-button" id="rc-chatroom-button" type="submit" value="发送"> -->
+			</div>
+			<div class="rong-liker">
+				<canvas class="rong-hearts-canvas"></canvas>
+				<button class="rong-hearts-btn" onclick="ht.startAnimation()"></button>
+			</div>
+		</div>
+	</div>
+	<script src="//cdn.ronghub.com/RongIMLib-2.5.12.js"></script>
+	<script src="//cdn.ronghub.com/RongEmoji-2.2.6.js"></script>
+	<script src="./chatroom.js"></script>
+	<script src="./like.js"></script>
+	<script src="./render.js"></script>
+	<script src="./mock.js"></script>
+	<script>
+		(function () {
+			//emoji表情
+			var RongIMEmoji = RongIMLib.RongIMEmoji;
+			RongIMEmoji.init();
+
+			var panel = document.getElementById("rc-emoji-panel");
+			// var panelBtn = document.getElementById("rc-chatroom-emoji");
+			var input = document.getElementById("rc-chatroom-input");
+			var btn = document.getElementById("rc-chatroom-button");
+
+			var emojis = RongIMEmoji.list;
+			for (var i = 0; i < 24; i++) {
+				var value = RongIMEmoji.list[i];
+				panel.appendChild(value.node);
+			}
+
+			// panelBtn.onclick = function () {
+			// 	if (panel.style.display == "block") {
+			// 		panel.style.display = "none";
+			// 	} else {
+			// 		panel.style.display = "block";
+			// 	}
+			// };
+
+			// //表情选择
+			// panel.onclick = function (event) {
+			// 	var e = event || window.event;
+			// 	var target = e.target || e.srcElement;
+			// 	if (document.all && !document.addEventListener === false) {
+			// 		console.log(target);
+			// 	}
+			// 	input.value += RongIMEmoji.symbolToEmoji(target.getAttribute("name"));
+			// }
+
+			// //发送消息
+			// btn.onclick = function () {
+			// 	var content = input.value;
+			// 	newMessage.content.content = content;
+
+			// 	panel.style.display = "none";
+			// 	input.value = "";
+			// 	sendMessage(newMessage, function (message) {
+			// 		updateMessage(message);
+			// 	});
+			// }
+
+			//接收消息并更新ui
+			// var newMessage = {
+			// 	"content": {
+			// 		"messageName": "TextMessage",
+			// 		"user": getUserInfo()
+			// 	},
+			// 	"conversationType": 1,
+			// 	"objectName": "RC:TxtMsg",
+			// 	"senderUserId": "user10",
+			// 	"sentTime": 1522401683566,
+			// 	"targetId": "user10",
+			// 	"messageType": "TextMessage",
+			// 	"messageUId": "B2EO-R2GR-MUA6-D3EE"
+			// };
+
+			// var times = 1;
+			// var add = setInterval(function () {
+			// 	if (times >= 20) {
+			// 		clearInterval(add);
+			// 	}
+
+			// 	newMessage.content.content = getRandomText();
+			// 	times += 1;
+
+			// 	updateMessage(newMessage);
+			// }, 1000);
+
+			function updateMessage(message) {
+				var t = document.getElementById("rc-message-list");
+				message.content.content = RongIMEmoji.symbolToEmoji(message.content.content);
+				var html = renderUI(message);
+				t.innerHTML += html;
+			}
+			var chatRoomInfo = {
+				"chatRoomId": "chatRoomId-007",
+				"count": 20
+			};
+
+			RongChatRoom.init(appInfo, chatRoomInfo, {
+				onSuccess: function (chatRoom) {
+					// 加入聊天室成功。
+					var newMessage = {
+						"content": {
+							"messageName": "TextMessage",
+							"content": "欢迎来到直播间~请自行调节手机音量至合适,如遇黑屏/卡顿，建议切换网络或刷新重新进",
+							"user": getUserInfo()
+						},
+						"conversationType": 1,
+						"objectName": "RC:TxtMsg",
+						"senderUserId": "user10",
+						"sentTime": 1522401683566,
+						"targetId": "user10",
+						"messageType": "TextMessage",
+						"messageUId": "B2EO-R2GR-MUA6-D3EE"
+					};
+					updateMessage(newMessage);
+					var content = "这是一条发给 chatroom 007 的消息。"
+					chatRoom.sendMessage(content, {
+						onSuccess: function (message) {
+							updateMessage(message);
+						},
+						onError: function (errorCode, message) {
+							console.log("发送聊天室消息失败", errorCode);
+						}
+					});
+				},
+				onError: function (error) {
+					alert('加入聊天室失败。')
+				},
+				onMessage: function (message) {
+					showNewMessage("chatroomId: " + message.targetId + ",  messageUId: " + message.messageUId);
+				}
+			});
+
+			function showNewMessage(content) {
+
+			}
+		})();
+		var ht = new HeartsFlow({
+			canvasEl: '.rong-hearts-canvas',
+			amount: 20
+		});
+
+		const h = document.body.scrollHeight  // 用onresize事件监控窗口或框架被调整大小，先把一开始的高度记录下来
+
+		function onfouce() { // 如果当前窗口小于一开始记录的窗口高度，那就让当前窗口等于一开始窗口的高度
+			setTimeout(function () {
+				window.scrollTo(0, document.body.clientHeight);
+			}, 500);
+		}
+	</script>
+
+</body>
+<script>
+	; (function (win) {
+		window.onresize = function () {
+			reset()
+		}
+		reset()
+		function reset() {
+			var doc = win.document
+			var docEl = doc.documentElement
+			var width = docEl.getBoundingClientRect().width
+			var baseWidth = 1206
+			var rem = (width > baseWidth ? baseWidth : width) / 10
+			doc.getElementsByTagName('body')[0].style.width = (width > baseWidth ? baseWidth : width) + 'px'
+			if (!dpr && !scale) {
+				var dpr, scale
+				var isAndroid = win.navigator.appVersion.match(/android/gi)
+				var isIPhone = win.navigator.appVersion.match(/iphone/gi)
+				var iPad = win.navigator.appVersion.match(/ipad/gi)
+				var devicePixelRatio = win.devicePixelRatio
+				if (isIPhone) {
+					// iOS下，对于2和3的屏，用2倍的方案，其余的用1倍方案
+					if (devicePixelRatio >= 3 && (!dpr || dpr >= 3)) {
+						dpr = 3
+					} else if (devicePixelRatio >= 2 && (!dpr || dpr >= 2)) {
+						dpr = 2
+					} else {
+						dpr = 1
+					}
+				} else if (iPad) {
+					if (devicePixelRatio === 2) {
+						dpr = 4
+					}
+				} else {
+					// 其他设备下，仍旧使用1倍的方案
+					dpr = 1
+				}
+				scale = 1 / dpr
+			}
+			docEl.setAttribute('data-dpr', dpr)
+			docEl.style.fontSize = rem + 'px'
+		}
+	})(window)
+</script>
+
+</html>
