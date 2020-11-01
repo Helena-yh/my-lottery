@@ -1,22 +1,31 @@
-/* html,body{
-  position:relative;
-  height:100%;
-  min-height:100%;
-} */
+body,
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#view {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
 .rc-video-body{
   width: 100%;
   height: 100%;
+  position: absolute;
 }
 video {
   width: 100%;
   height: 100%;
   padding: 0;
   margin: 0;
+  object-fit: fill;
 }
 
 .rc-chat {
-  width: 334px;
-  height: 110px;
+  width: 310px;
+  height: 100px;
   background: rgb(0 0 0 / 0.3);
   border-radius: 60px;
   position: absolute;
@@ -24,7 +33,7 @@ video {
   left: 40px;
   font-size: 28px;
 }
-.rc-chat span, .rc-user-join span{
+.rc-chat-name, .rc-chat-num, .rc-user-join span{
   display: block;
   color: #FFFFFF;
 }
@@ -32,25 +41,50 @@ video {
   font-size: 36px;
 }
 .rc-chat-img, .rc-user-img{
-  margin: 15px;
+  margin: 12px;
+  width: 80px;
+  height: 80px;
 }
 .rc-user-join {
-  height: 110px;
-  background: rgb(0 0 0 / 0.3);
-  border-radius: 60px;
+  height: 100px;
   position: absolute;
   bottom: 440px;
   left: 40px;
   font-size: 28px;
+ 
+}
+.rc-user-main{
+  background: linear-gradient(180deg, rgb(248 99 50 / 0.5) 0%, rgb(248 29 67 / 0.5) 70%);
+  border-radius: 60px;
+  animation:mymove 1.5s;
+  animation-iteration-count:1;
+  
+  /* Safari and Chrome */
+  -webkit-animation:mymove 1.5s;
+  -webkit-animation-iteration-count:1;
+  position: relative;
+}
+@keyframes mymove
+{
+from {left:-200px;opacity: 0;}
+to {left:0px;opacity: 1;}
+}
+
+@-webkit-keyframes mymove /* Safari and Chrome */
+{
+  from {left:-200px;opacity: 0;}
+  to {left:0px;opacity: 1;}
 }
 .rc-user-info {
   display: inline-block;
-  vertical-align: super;
+  vertical-align: top;
   padding-right: 20px;
+  padding-top: 6px;
 }
 .rc-chat-info{
   display: inline-block;
-  vertical-align: super;
+  vertical-align: top;
+  padding-top: 10px;
 }
 .rc-main {
   width: 100%;
@@ -217,3 +251,14 @@ video {
 :-ms-input-placeholder { /* Internet Explorer 10+ */
   color: #E0E0E0;
 }   
+
+.rc-content-color{
+  color: #FFD451
+}
+.rc-send {
+  width: 50px;
+  position: absolute;
+  left: 500px;
+  bottom: 10px;
+  display: none;
+}

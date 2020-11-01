@@ -28,7 +28,7 @@ class HeartsFlow {
   setHeartsList() {
     let arr = [];
     for (let i = 0; i < this.heartsAmount; i++) {
-      let currentSize = this.getRandom(10, 15);
+      let currentSize = this.getRandom(40, 50);
       let dt = {
         x: this.w / 2,
         y: this.h,
@@ -82,6 +82,9 @@ class HeartsFlow {
     this.ctx.bezierCurveTo(_x0, _y0, _x1, _y1, xfn, yfn);
     this.ctx.fillStyle = `rgba(${color}, ${alfa})`;
     this.ctx.strokeStyle = `rgba(${color}, ${alfa})`;
+    // var img = new Image();
+    // img.src = "like.svg";
+    // this.ctx.drawImage(img, 5, 5);
     this.ctx.fill();
     this.ctx.stroke();
     this.ctx.closePath();

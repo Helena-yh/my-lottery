@@ -7,50 +7,50 @@
 	<meta name="screen-orientation" content="portrait">
 	<meta name="x5-orientation" content="portrait">
 	<link rel="stylesheet" href="./chatroom.css">
+	<meta name="viewport" id="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5">
 </head>
 
 <body>
-	<div class="rc-main">
-		<div class="rc-video-body">
-			<video muted src="video1.mp4" autoplay loop webkit-playsinline="true" x-webkit-airplay="true" playsinline="true"
-				x5-video-player-type="h5" x5-video-player-fullscreen="true" preload="auto" webkit-playsinline="true"
-				x5-playsinline="true" playsinline="true"></video>
+	<div id='view'>
+		<div class="rc-main">
+			<div class="rc-video-body">
+				<video muted src="video.mp4" autoplay loop webkit-playsinline="true" x-webkit-airplay="true" playsinline="true"
+					x5-video-player-type="h5" x5-video-player-fullscreen="true" preload="auto" webkit-playsinline="true"
+					x5-playsinline="true" playsinline="true" webkit-playsinline="" playsinline=""></video>
+			</div>
 		</div>
 
 		<div class="rc-chat">
 			<div class="rc-chat-main">
-				<img class="rc-chat-img" src="./like.svg">
+				<img class="rc-chat-img" src="./logo.png">
 				<div class="rc-chat-info">
 					<span class="rc-chat-name">[直播回顾]</span>
-					<span class="rc-chat-num">4208 人次</span>
+					<span class="rc-chat-num"><span class="rc-content-color">4208</span> 人次</span>
 				</div>
 			</div>
 		</div>
-		<div class="rc-user-join">
-			<div class="rc-user-main">
-				<img class="rc-user-img" src="./like.svg">
-				<div class="rc-user-info">
-					<span class="rc-user-name">无懈可击...等人</span>
-					<span class="rc-user-num">进入了直播间</span>
-				</div>
-			</div>
-		</div>
+		<div class="rc-user-join" id="rc-user-join"></div>
 		<div class="rc-chatroom">
-			<div class="rc-message-list-wrapper">
+			<div class="rc-message-list-wrapper" id="rc-message-list-wrapper">
 				<div class="rc-message-list" id="rc-message-list"></div>
 			</div>
 
 			<div class="rc-chatroom-user">
 				<!-- <span class="rc-chatroom-emoji" id="rc-chatroom-emoji">😄</span> -->
 				<div class="rc-emoji-panel" id="rc-emoji-panel"></div>
-				<input class="rc-chatroom-input" id="rc-chatroom-input" type="text" placeholder="说点什么..." onfocus="onfouce()">
-				<!-- <input class="rc-chatroom-button" id="rc-chatroom-button" type="submit" value="发送"> -->
+				<div>
+					<input class="rc-chatroom-input" id="rc-chatroom-input" type="search" placeholder="说点什么..."
+						onfocus="onFocus()">
+					<img class="rc-send" id='send' src="LC_icon_send_fill_1.png" alt="" onclick="send()">
+				</div>
+
 			</div>
 			<div class="rong-liker">
 				<canvas class="rong-hearts-canvas"></canvas>
 				<button class="rong-hearts-btn" onclick="ht.startAnimation()"></button>
 			</div>
 		</div>
+	</div>
 	</div>
 	<script src="//cdn.ronghub.com/RongIMLib-2.5.12.js"></script>
 	<script src="//cdn.ronghub.com/RongEmoji-2.2.6.js"></script>
@@ -59,142 +59,159 @@
 	<script src="./render.js"></script>
 	<script src="./mock.js"></script>
 	<script>
-		(function () {
-			//emoji表情
-			var RongIMEmoji = RongIMLib.RongIMEmoji;
-			RongIMEmoji.init();
+		// (function () {
+		//emoji表情
+		var RongIMEmoji = RongIMLib.RongIMEmoji;
+		window.RongIMEmoji = RongIMEmoji;
+		RongIMEmoji.init();
 
-			var panel = document.getElementById("rc-emoji-panel");
-			// var panelBtn = document.getElementById("rc-chatroom-emoji");
-			var input = document.getElementById("rc-chatroom-input");
-			var btn = document.getElementById("rc-chatroom-button");
+		var panel = document.getElementById("rc-emoji-panel");
+		// var panelBtn = document.getElementById("rc-chatroom-emoji");
+		var input = document.getElementById("rc-chatroom-input");
+		var btn = document.getElementById("rc-chatroom-button");
 
-			var emojis = RongIMEmoji.list;
-			for (var i = 0; i < 24; i++) {
-				var value = RongIMEmoji.list[i];
-				panel.appendChild(value.node);
-			}
+		var emojis = RongIMEmoji.list;
+		for (var i = 0; i < 24; i++) {
+			var value = RongIMEmoji.list[i];
+			panel.appendChild(value.node);
+		}
 
-			// panelBtn.onclick = function () {
-			// 	if (panel.style.display == "block") {
-			// 		panel.style.display = "none";
-			// 	} else {
-			// 		panel.style.display = "block";
-			// 	}
-			// };
+		// panelBtn.onclick = function () {
+		// 	if (panel.style.display == "block") {
+		// 		panel.style.display = "none";
+		// 	} else {
+		// 		panel.style.display = "block";
+		// 	}
+		// };
 
-			// //表情选择
-			// panel.onclick = function (event) {
-			// 	var e = event || window.event;
-			// 	var target = e.target || e.srcElement;
-			// 	if (document.all && !document.addEventListener === false) {
-			// 		console.log(target);
-			// 	}
-			// 	input.value += RongIMEmoji.symbolToEmoji(target.getAttribute("name"));
-			// }
+		// //表情选择
+		// panel.onclick = function (event) {
+		// 	var e = event || window.event;
+		// 	var target = e.target || e.srcElement;
+		// 	if (document.all && !document.addEventListener === false) {
+		// 		console.log(target);
+		// 	}
+		// 	input.value += RongIMEmoji.symbolToEmoji(target.getAttribute("name"));
+		// }
 
-			// //发送消息
-			// btn.onclick = function () {
-			// 	var content = input.value;
-			// 	newMessage.content.content = content;
+		// //发送消息
+		// btn.onclick = function () {
+		// 	var content = input.value;
+		// 	newMessage.content.content = content;
 
-			// 	panel.style.display = "none";
-			// 	input.value = "";
-			// 	sendMessage(newMessage, function (message) {
-			// 		updateMessage(message);
-			// 	});
-			// }
+		// 	panel.style.display = "none";
+		// 	input.value = "";
+		// 	sendMessage(newMessage, function (message) {
+		// 		updateMessage(message);
+		// 	});
+		// }
 
-			//接收消息并更新ui
-			// var newMessage = {
-			// 	"content": {
-			// 		"messageName": "TextMessage",
-			// 		"user": getUserInfo()
-			// 	},
-			// 	"conversationType": 1,
-			// 	"objectName": "RC:TxtMsg",
-			// 	"senderUserId": "user10",
-			// 	"sentTime": 1522401683566,
-			// 	"targetId": "user10",
-			// 	"messageType": "TextMessage",
-			// 	"messageUId": "B2EO-R2GR-MUA6-D3EE"
-			// };
+		//接收消息并更新ui
+		// var newMessage = {
+		// 	"content": {
+		// 		"messageName": "TextMessage",
+		// 		"user": getUserInfo()
+		// 	},
+		// 	"conversationType": 1,
+		// 	"objectName": "RC:TxtMsg",
+		// 	"senderUserId": "user10",
+		// 	"sentTime": 1522401683566,
+		// 	"targetId": "user10",
+		// 	"messageType": "TextMessage",
+		// 	"messageUId": "B2EO-R2GR-MUA6-D3EE"
+		// };
 
-			// var times = 1;
-			// var add = setInterval(function () {
-			// 	if (times >= 20) {
-			// 		clearInterval(add);
-			// 	}
+		// var times = 1;
+		// var add = setInterval(function () {
+		// 	if (times >= 20) {
+		// 		clearInterval(add);
+		// 	}
 
-			// 	newMessage.content.content = getRandomText();
-			// 	times += 1;
+		// 	newMessage.content.content = getRandomText();
+		// 	times += 1;
 
-			// 	updateMessage(newMessage);
-			// }, 1000);
+		// 	updateMessage(newMessage);
+		// }, 1000);
 
-			function updateMessage(message) {
-				var t = document.getElementById("rc-message-list");
-				message.content.content = RongIMEmoji.symbolToEmoji(message.content.content);
-				var html = renderUI(message);
-				t.innerHTML += html;
-			}
-			var chatRoomInfo = {
-				"chatRoomId": "chatRoomId-007",
-				"count": 20
-			};
+		function updateMessage(message) {
+			var t = document.getElementById("rc-message-list");
+			// message.content.content = RongIMEmoji.symbolToEmoji(message.content.content);
+			var html = renderUI(message);
+			t.innerHTML += html;
+			document.getElementById('rc-message-list-wrapper').scrollTop = document.getElementById('rc-message-list-wrapper').scrollHeight;
+		}
+		var chatRoomInfo = {
+			"chatRoomId": "chatRoomId-001",
+			"count": 0
+		};
+		var id = window.location.search.replace('?id=', '');
+		appInfo.id = id;
+		RongChatRoom.init(appInfo, chatRoomInfo, {
+			onSuccess: function (chatRoom) {
 
-			RongChatRoom.init(appInfo, chatRoomInfo, {
-				onSuccess: function (chatRoom) {
-					// 加入聊天室成功。
-					var newMessage = {
-						"content": {
-							"messageName": "TextMessage",
-							"content": "欢迎来到直播间~请自行调节手机音量至合适,如遇黑屏/卡顿，建议切换网络或刷新重新进",
-							"user": getUserInfo()
-						},
-						"conversationType": 1,
-						"objectName": "RC:TxtMsg",
-						"senderUserId": "user10",
-						"sentTime": 1522401683566,
-						"targetId": "user10",
-						"messageType": "TextMessage",
-						"messageUId": "B2EO-R2GR-MUA6-D3EE"
-					};
-					updateMessage(newMessage);
-					var content = "这是一条发给 chatroom 007 的消息。"
-					chatRoom.sendMessage(content, {
-						onSuccess: function (message) {
-							updateMessage(message);
-						},
-						onError: function (errorCode, message) {
-							console.log("发送聊天室消息失败", errorCode);
+				var msg = new RongIMClient.RegisterMessage.PersonMessage(getUserInfo(appInfo.id));
+				chatRoom.sendMessage(msg, {
+					onSuccess: function (message) {
+						RongIMLib.chatRoom = chatRoom;
+						var welcomeMessageInfo = {
+							content: {
+								content: "欢迎来到直播间~请自行调节手机音量至合适,如遇黑屏/卡顿，建议切换网络或刷新重新进。"
+							}
 						}
-					});
-				},
-				onError: function (error) {
-					alert('加入聊天室失败。')
-				},
-				onMessage: function (message) {
-					showNewMessage("chatroomId: " + message.targetId + ",  messageUId: " + message.messageUId);
-				}
-			});
-
-			function showNewMessage(content) {
-
+						updateMessage(welcomeMessageInfo);
+					},
+					onError: function (errorCode, message) {
+						console.log("发送聊天室消息失败", errorCode);
+					}
+				});
+			},
+			onError: function (error) {
+				alert('加入聊天室失败。')
+			},
+			onMessage: function (message) {
+				showNewMessage("chatroomId: " + message.targetId + ",  messageUId: " + message.messageUId);
 			}
-		})();
+		});
+
+		function showNewMessage(content) {
+
+		}
+
+		function send() {
+			let content = document.getElementById('rc-chatroom-input').value;
+			if (content) {
+				let messageValue = textMessageInfo = {
+					content: content,
+					user: getUserInfo(RongIMLib.chatRoom.currentUser.userId)
+				}
+				var msg = new RongIMLib.TextMessage(messageValue);
+				RongIMLib.chatRoom.sendMessage(msg, {
+					onSuccess: function (message) {
+						updateMessage(message);
+						document.getElementById('rc-chatroom-input').value = '';
+						document.getElementById('send').style.display = 'none';
+					},
+					onError: function (errorCode, message) {
+						console.log("发送聊天室消息失败", errorCode);
+					}
+				});
+			}
+		}
+
+		// })();
 		var ht = new HeartsFlow({
 			canvasEl: '.rong-hearts-canvas',
-			amount: 20
+			amount: 1
 		});
 
 		const h = document.body.scrollHeight  // 用onresize事件监控窗口或框架被调整大小，先把一开始的高度记录下来
-
-		function onfouce() { // 如果当前窗口小于一开始记录的窗口高度，那就让当前窗口等于一开始窗口的高度
-			setTimeout(function () {
-				window.scrollTo(0, document.body.clientHeight);
-			}, 500);
+		function onFocus() {
+			document.getElementById('send').style.display = 'block';
 		}
+		// function onBlur(e) {
+		// 	console.info(e)
+		// 	document.getElementById('send').style.display = 'none';
+		// }
 	</script>
 
 </body>
@@ -240,6 +257,13 @@
 			docEl.style.fontSize = rem + 'px'
 		}
 	})(window)
+</script>
+<script>
+	window.onload = function () {
+		var load = document.body.clientHeight
+		var view = document.getElementById('view')
+		view.style.height = load + 'px'
+	}
 </script>
 
 </html>

@@ -24,18 +24,29 @@ function render(data, template) {
 }
 
 function renderUI(data, tpl) {
-    var _tpl = ['<div class="rc-message" _userId={{this.content.user.id}}>',
+    var _tpl = data.content.user ? ['<div class="rc-message">',
         '<div class="rc-message-main">',
         '<span class="rc-message-name">{{this.content.user.name}} :</span>',
         '    <span class="rc-message-content">{{this.content.content}}</span>',
         '</div>',
-        '</div>'].join("");
+        '</div>'].join("") : ['<div class="rc-message">',
+            '<div class="rc-message-main">',
+            '    <span class="rc-message-content rc-content-color">{{this.content.content}}</span>',
+            '</div>',
+            '</div>'].join("");
     tpl = tpl || _tpl;
 
     return render(data, tpl);
 }
 
-function sendMessage(message, callback) {
-    //send ok
-    callback(message);
+function renderUserUI(data, tpl) {
+    var _tpl = [' <div class="rc-user-main" id="{{this.id}}">',
+        '<img class="rc-user-img" src="{{this.portrait}}">',
+        '<div class="rc-user-info">',
+        '    <span class="rc-user-name">{{this.name}}</span>',
+        '    <span class="rc-user-num">进入了直播间</span>',
+        '</div></div>'].join("");
+    tpl = tpl || _tpl;
+
+    return render(data, tpl);
 }

@@ -22,14 +22,21 @@
 			return;
 		} else {
 			var appKey = appInfo.appKey;
-			var token = appInfo.token;
+			var token = appInfo[id];
 
 			RongIMLib.RongIMClient.init(appKey);
+
+			var messageName = 'PersonMessage';  // 消息名称
+			var objectName = 's:person';  // 消息类型名，请按照此格式命名
+			var isCounted = true;  // 消息计数
+			var isPersited = true;  // 消息保存
+			var mesasgeTag = new RongIMLib.MessageTag(isCounted, isPersited);
+			var prototypes = ['name', 'portrait', 'id'];  // 消息类中的属性名
+			RongIMClient.registerMessageType(messageName, objectName, mesasgeTag, prototypes);
 
 			//开始链接
 			RongIMClient.connect(token, {
 				onSuccess: function (userId) {
-					console.info(userId);
 					RongIM.userInfo = {
 						data: { userId: userId },
 						status: "ok",
@@ -68,7 +75,7 @@
 		RongIMClient.setOnReceiveMessageListener({
 			// 接收到的消息
 			onReceived: function (message) {
-				updateMessage(message);
+				message.messageType == "TextMessage" ? updateMessage(message) : userJoinMeeage(message);
 			}
 		});
 	}
@@ -77,7 +84,18 @@
 		message.content.content = RongIMEmoji.symbolToEmoji(message.content.content);
 		var html = renderUI(message);
 		t.innerHTML += html;
+		document.getElementById('rc-message-list-wrapper').scrollTop = document.getElementById('rc-message-list-wrapper').scrollHeight;
 	}
+
+	function userJoinMeeage(message) {
+		var t = document.getElementById("rc-user-join");
+		var html = renderUserUI(message.content);
+		t.innerHTML += html;
+		setTimeout(() => {
+			document.getElementById(message.content.id).remove();
+		}, 1500)
+	}
+
 	function initChatRoom(appInfo, chatRoomInfo, callbacks, modules) {
 		var chatRoomId = chatRoomInfo.chatRoomId;
 		var count = chatRoomInfo.count;
@@ -114,9 +132,9 @@
 							quit: function (callbacks) {
 								IM.quitChatRoom(chatRoomId, callbacks);
 							},
-							sendMessage: function (content, callbacks) {
+							sendMessage: function (msg, callbacks) {
 								var conversationType = RongIMLib.ConversationType.CHATROOM;
-								var msg = new RongIMLib.TextMessage(content);
+								// var msg = new RongIMLib.TextMessage(content);
 
 								IM.sendMessage(conversationType, chatRoomId, msg, callbacks);
 							}
