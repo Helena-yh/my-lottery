@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>年会抽奖</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!-- <link rel="stylesheet" href="./index.css"> -->
+  </head>
+
+  <body>
+    <script src="./lib/three.min.js"></script>
+    <script src="./lib/tween.min.js"></script>
+    <script src="./lib/TrackballControls.js"></script>
+    <script src="./lib/CSS3DRenderer.js"></script>
+    <script src="./lib/ajax.js"></script>
+
+    <div class="canvas-box">
+      <canvas id="canvas">你的浏览器不支持canvas</canvas>
+    </div>
+
+    <div class="music">
+      <audio id="music" src="./data/music.mp3" class="music-item" loop></audio>
+      <div id="musicBox" class="music-box" title="播放/暂停背景音乐">Music</div>
+    </div>
+
+    <div id="log-img">
+      <img src="./img/logo.png" alt="" width="100px" style="margin-left: 15px;">
+    </div>
+    <div id="prizeBar">
+    </div>
+
+    <div id="container"></div>
+
+    <div id="menu">
+      <button id="enter">进入抽奖</button>
+      <div id="lotteryBar" class="none">
+        <button id="lottery">抽奖</button>
+        <button id="reLottery">重新抽奖</button>
+        <button id="save">导出抽奖结果</button>
+        <button id="close">关闭抽奖结果</button>
+        <button id="reset" class="margin-l-40">重置</button>
+      </div>
+    </div>
+
+    <div class="qipao-container"></div>
+  </body>
+</html>
