@@ -23,8 +23,8 @@ let TOTAL_CARDS,
   HIGHLIGHT_CELL = [],
   // 当前的比例
   Resolution = 1;
-// let baseUrl = 'https://tools.rongcloud.cn/lottery';
-let baseUrl = 'http://localhost:8090';
+let baseUrl = 'https://tools.rongcloud.cn/lottery';
+// let baseUrl = 'http://localhost:8090';
 let camera,
   scene,
   renderer,
@@ -245,42 +245,41 @@ function bindEvent() {
         break;
       // 抽奖
       case "lottery":
-        setLotteryStatus(true);
+        // setLotteryStatus(true);
         // 每次抽奖前先保存上一次的抽奖数据
         saveData();
         //更新剩余抽奖数目的数据显示
         changePrize();
         resetCard().then(res => {
+          rotateAll()
           // 抽奖
-          lottery();
-          // rotateBall();
+          // lottery();
         });
         break;
       // 重新抽奖
       case "reLottery":
-        // setLotteryStatus(true);
-        // lottery();
-       
-        setLotteryStatus(false);
-        if (currentLuckys.length === 0) {
-          // addQipao(`当前还没有抽奖，无法重新抽取喔~~`);
-          return;
-        }
-        setErrorData(currentLuckys);
-        // addQipao(`重新抽取[${currentPrize.title}],做好准备`);
         setLotteryStatus(true);
-        // 重新抽奖则直接进行抽取，不对上一次的抽奖数据进行保存
-        // 抽奖
-        resetCard().then(res => {
-          // 抽奖
-          lottery();
-        });
+        lottery();
+       
+        // setLotteryStatus(false);
+        // if (currentLuckys.length === 0) {
+        //   // addQipao(`当前还没有抽奖，无法重新抽取喔~~`);
+        //   return;
+        // }
+        // setErrorData(currentLuckys);
+        // // addQipao(`重新抽取[${currentPrize.title}],做好准备`);
+        // setLotteryStatus(true);
+        // // 重新抽奖则直接进行抽取，不对上一次的抽奖数据进行保存
+        // // 抽奖
+        // resetCard().then(res => {
+        //   // 抽奖
+        //   lottery();
+        // });
         break;
       // 导出抽奖结果
       case "save":
         saveData().then(res => {
           resetCard().then(res => {
-            // 将之前的记录置空
             currentLuckys = [];
           });
           exportData();
@@ -307,7 +306,6 @@ function switchScreen(type) {
     default:
       btns.enter.classList.add("none");
       btns.lotteryBar.classList.remove("none");
-      // transform(targets.sphere, 1000);
       transform(targets.helix, 1000);
       break;
   }
@@ -364,7 +362,6 @@ function addHighlight() {
  * 渲染地球等
  */
 function transform(targets, duration) {
-  // TWEEN.removeAll();
   for (var i = 0; i < threeDCards.length; i++) {
     var object = threeDCards[i];
     var target = targets[i];
@@ -392,15 +389,6 @@ function transform(targets, duration) {
       )
       .easing(TWEEN.Easing.Exponential.InOut)
       .start();
-
-    // new TWEEN.Tween(object.rotation)
-    //     .to({
-    //         x: target.rotation.x,
-    //         y: target.rotation.y,
-    //         z: target.rotation.z
-    //     }, Math.random() * duration + duration)
-    //     .easing(TWEEN.Easing.Exponential.InOut)
-    //     .start();
   }
 
   new TWEEN.Tween(this)
@@ -408,13 +396,23 @@ function transform(targets, duration) {
     .onUpdate(render)
     .start();
 }
+function rotateAll() {
+  scene.rotation.y = 0;
+  tweenTest = new TWEEN.Tween(scene.rotation)
+    .to({y: Math.PI * 1000},
+      ROTATE_TIME * 100
+    )
+    .onUpdate(render)
+    .start()
+}
 
 function rotateBall() {
+  TWEEN.remove(tweenTest)
   return new Promise((resolve, reject) => {
     scene.rotation.y = 0;
-    tweenTest = new TWEEN.Tween(scene.rotation)
-      .to({y: Math.PI * 20},
-        ROTATE_TIME
+    new TWEEN.Tween(scene.rotation)
+      .to({y: Math.PI*2},
+        200
       )
       .onUpdate(render)
       .easing(TWEEN.Easing.Exponential.InOut)

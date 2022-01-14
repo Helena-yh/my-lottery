@@ -261,40 +261,7 @@ function loadData() {
       .catch(data => {
         curData.leftUsers = Object.assign([], curData.users);
       });
-  // })
   })
-  // request.post('https://www.rongcloud.cn/lotteryDraw/user', (error, res, body) => {
-  //   if (error) {
-  //     console.error(error)
-  //     return
-  //   }
-  //   let data = [];
-  //   body = JSON.parse(body);
-  //   for(let i=0; i<body.length; i++){
-  //     let wechat_avatar = body[i]['wechat_avatar'] ? body[i]['wechat_avatar'] : 'http://thirdwx.qlogo.cn/mmopen/ajNVdqHZLLBicBPKoPX7bFlcOgjOMoMEEYa9DQcSShk8gagBfrbrvd9NzGAJF4nW5ibLVFgeD9QjnqibOeUFtOLRQ/132';
-  //     let wechat_nickname = body[i]['wechat_nickname'] ? body[i]['wechat_nickname']: 'test'
-  //     let ele = [wechat_avatar, wechat_nickname];
-  //     if(!ele[0]){
-  //       console.info(body[i]);
-  //     }
-  //     data.push(ele)
-  //   }
-  //   console.log(`statusCode: ${res.statusCode}`)
-  //   curData.users = data;
-
-  //   // 重新洗牌
-  //   shuffle(curData.users);
-
-  //   // 读取已经抽取的结果
-  //   loadTempData()
-  //     .then(data => {
-  //       luckyData = data[0];
-  //       errorData = data[1];
-  //     })
-  //     .catch(data => {
-  //       curData.leftUsers = Object.assign([], curData.users);
-  //     });
-  // })
 }
 
 function getLeftUsers() {
