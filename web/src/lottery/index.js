@@ -23,8 +23,8 @@ let TOTAL_CARDS,
   HIGHLIGHT_CELL = [],
   // 当前的比例
   Resolution = 1;
-// let baseUrl = 'https://tools.rongcloud.cn/lottery';
-let baseUrl = 'http://localhost:8090';
+let baseUrl = 'https://tools.rongcloud.cn/lottery';
+// let baseUrl = 'http://localhost:8090';
 let camera,
   scene,
   renderer,
@@ -111,6 +111,16 @@ function initAll() {
   window.AJAX({
     url: baseUrl + "/getUsers",
     success(data) {
+      // 踢出指定人员
+      for (let index = 0; index < blockUserList.length; index++) {
+        const name = blockUserList[index];
+        for (let i = 0; i < data.length; i++) {
+          const user = data[i];
+          if(user[1] == name){
+            data.splice(i,1);
+          }          
+        }
+      }
       basicData.users = data;
       initCards();
       animate();
@@ -234,7 +244,7 @@ function bindEvent() {
         rotate = true;
         switchScreen("lottery");
         //shine
-        document.getElementById('prize-item-' + (currentPrizeIndex+1)).classList.add('shine') 
+        document.getElementById('prize-item-' + (currentPrizeIndex)).classList.add('shine') 
         break;
       // 重置
       case "reset":
@@ -777,29 +787,12 @@ function setData(type, data) {
   });
 }
 
-// function setErrorData(data) {
-//   return new Promise((resolve, reject) => {
-//     window.AJAX({
-//       url: baseUrl + "/errorData",
-//       data: {
-//         data
-//       },
-//       success() {
-//         resolve();
-//       },
-//       error() {
-//         reject();
-//       }
-//     });
-//   });
-// }
-
 function exportData() {
   window.AJAX({
     url: baseUrl + "/export",
     success(data) {
       if (data.type === "success") {
-        location.href = data.url;
+        location.href = baseUrl + '/server/' + data.url;
       }
     }
   });

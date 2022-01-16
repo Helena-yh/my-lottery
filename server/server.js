@@ -72,11 +72,6 @@ app.post("*", (req, res, next) => {
 // 获取之前设置的数据
 router.post("/getTempData", (req, res, next) => {
   getLeftUsers();
-  // console.info(curData,{
-  //   cfgData: cfg,
-  //   leftUsers: curData.leftUsers,
-  //   luckyData: luckyData
-  // })
   res.json({
     cfgData: cfg,
     leftUsers: curData.leftUsers,
@@ -106,7 +101,6 @@ router.post("/getUsers", (req, res, next) => {
 
 // 获取奖品信息
 router.post("/getPrizes", (req, res, next) => {
-  // res.json(curData.prize);
   log(`成功返回奖品数据`);
 });
 
@@ -148,19 +142,19 @@ router.post("/errorData", (req, res, next) => {
 
 // 保存数据到excel中去
 router.post("/export", (req, res, next) => {
-  let type = [1, 2, 3, 4, 5, defaultType],
-    outData = [["头像", "姓名", "部门"]];
+  // let type = [1, 2, 3, 4, 5, defaultType],
+    outData = [["头像", "姓名", "邮箱前缀"]];
   cfg.prizes.forEach(item => {
     outData.push([item.text]);
     outData = outData.concat(luckyData[item.type] || []);
   });
 
-  writeXML(outData, "/抽奖结果.xlsx")
+  writeXML(outData, "/result.xlsx")
     .then(dt => {
-      // res.download('/抽奖结果.xlsx');
+      // res.download('./抽奖结果.xlsx');
       res.status(200).json({
         type: "success",
-        url: "抽奖结果.xlsx"
+        url: "result.xlsx"
       });
       log(`导出数据成功！`);
     })
