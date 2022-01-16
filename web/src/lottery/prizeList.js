@@ -12,18 +12,16 @@ function setPrizes(pri) {
 
 function showPrizeList(currentPrizeIndex) {
   let currentPrize = prizes[currentPrizeIndex]; //${item.type == currentPrize.type ? "shine" : ""}
-  let htmlCode = `<div class="prize-mess">正在抽取<label id="prizeType" class="prize-shine">${currentPrize.text}</label>，剩余<label id="prizeLeft" class="prize-shine">${currentPrize.count}</label>个</div><ul class="prize-list">`;
+  console.info(currentPrize.title)
+  let htmlCode = `<div class="prize-mess">正在抽取<label id="prizeType" class="prize-shine">${currentPrize.text}</label><label id="prizeText" class="prize-shine">${currentPrize.title}</label>，剩余<label id="prizeLeft" class="prize-shine">${currentPrize.count}</label>个</div><ul class="prize-list">`;
   prizes.forEach(item => {
-    if (item.type === defaultType) {
-      return true;
-    }
     htmlCode += `<li id="prize-item-${item.type}" class="prize-item">
                   <span></span><span></span><span></span><span></span>
                   <div class="prize-img">
                     <img src="${item.img}">
                   </div>
                   <div class="prize-text">
-                    <h5 class="prize-title">${item.text}</h5>
+                    <h5 class="prize-title">${item.text} ${item.title}</h5>
                     <div class="prize-count">
                       <div class="progress">
                         <div id="prize-bar-${item.type}" class="progress-bar progress-bar-danger progress-bar-striped active" style="width: 100%;"></div>
@@ -44,7 +42,7 @@ function resetPrize(currentPrizeIndex) {
 }
 
 let setPrizeData = (function () {
-  return function (currentPrizeIndex, count, isInit) {
+  return function (currentPrizeIndex, count, isInit, luckyData) {
     let currentPrize = prizes[currentPrizeIndex],
       type = currentPrize.type,
       elements = prizeElement[type],
@@ -83,17 +81,10 @@ let setPrizeData = (function () {
       lastBox.classList.add("done");
       elements.box && elements.box.classList.add("shine");
       prizeElement.prizeType.textContent = currentPrize.text;
-      // prizeElement.prizeText.textContent = currentPrize.title;
+      prizeElement.prizeText.textContent = currentPrize.title;
 
       lasetPrizeIndex = currentPrizeIndex;
     }
-
-    // if (currentPrizeIndex === 0) {
-    //   prizeElement.prizeType.textContent = "特别奖";
-    //   prizeElement.prizeText.textContent = " ";
-    //   prizeElement.prizeLeft.textContent = "不限制";
-    //   return;
-    // }
 
     count = totalCount - count;
     count = count < 0 ? 0 : count;

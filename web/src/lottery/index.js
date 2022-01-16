@@ -23,8 +23,8 @@ let TOTAL_CARDS,
   HIGHLIGHT_CELL = [],
   // 当前的比例
   Resolution = 1;
-let baseUrl = 'https://tools.rongcloud.cn/lottery';
-// let baseUrl = 'http://localhost:8090';
+// let baseUrl = 'https://tools.rongcloud.cn/lottery';
+let baseUrl = 'http://localhost:8090';
 let camera,
   scene,
   renderer,
@@ -49,7 +49,11 @@ let selectedCardIndex = [],
   // 正在抽奖
   isLotting = false,
   rotate = false,
-  currentLuckys = [];
+  currentLuckys = [],
+  //是否旋转
+  isLotteryRotate = true; 
+
+let blockUserList = ['邹岳', '董晗'];
 
 initAll();
 
@@ -69,6 +73,17 @@ function initAll() {
 
       TOTAL_CARDS = ROW_COUNT * COLUMN_COUNT;
 
+      // 踢出指定人员
+      for (let index = 0; index < blockUserList.length; index++) {
+        const name = blockUserList[index];
+        for (let i = 0; i < data.leftUsers.length; i++) {
+          const user = data.leftUsers[i];
+          if(user[1] == name){
+            data.leftUsers.splice(i,1);
+          }          
+        }
+      }
+      
       // 读取当前已设置的抽奖结果
       basicData.leftUsers = data.leftUsers;
       basicData.luckyUsers = data.luckyData;
@@ -89,7 +104,7 @@ function initAll() {
 
       showPrizeList(currentPrizeIndex);
       let curLucks = basicData.luckyUsers[currentPrize.type];
-      setPrizeData(currentPrizeIndex, curLucks ? curLucks.length : 0, true);
+      setPrizeData(currentPrizeIndex, curLucks ? curLucks.length : 0, true, data.luckyData);
     }
   });
 
@@ -244,37 +259,57 @@ function bindEvent() {
         switchScreen("enter");
         break;
       // 抽奖
-      case "lottery":
-        // setLotteryStatus(true);
-        // 每次抽奖前先保存上一次的抽奖数据
-        saveData();
-        //更新剩余抽奖数目的数据显示
-        changePrize();
-        resetCard().then(res => {
-          rotateAll()
+      case "start":
+        if(isLotteryRotate){
+         
+          // 每次抽奖前先保存上一次的抽奖数据
+          if(saveData('lottery')){
+            isLotteryRotate = false;
+            //更新剩余抽奖数目的数据显示
+            changePrize('lottery');
+
+            resetCard().then(res => {
+              //旋转开始
+              rotateAll()
+              document.getElementById('start').innerHTML = '停止';
+            });
+          };
+        }else{
+          setLotteryStatus(true);
           // 抽奖
-          // lottery();
-        });
+          lottery('lottery');
+          document.getElementById('start').innerHTML = '开始';
+          isLotteryRotate = true;
+        }
         break;
       // 重新抽奖
       case "reLottery":
-        setLotteryStatus(true);
-        lottery();
-       
-        // setLotteryStatus(false);
-        // if (currentLuckys.length === 0) {
-        //   // addQipao(`当前还没有抽奖，无法重新抽取喔~~`);
-        //   return;
-        // }
-        // setErrorData(currentLuckys);
-        // // addQipao(`重新抽取[${currentPrize.title}],做好准备`);
-        // setLotteryStatus(true);
-        // // 重新抽奖则直接进行抽取，不对上一次的抽奖数据进行保存
-        // // 抽奖
-        // resetCard().then(res => {
-        //   // 抽奖
-        //   lottery();
-        // });
+        if (currentLuckys.length === 0) {
+          // addQipao(`当前还没有抽奖，无法重新抽取喔~~`);
+          return;
+        }
+        if(isLotteryRotate){
+          
+          // 每次抽奖前先保存上一次的抽奖数据
+          setLotteryStatus(false);
+          basicData.prizes[currentPrizeIndex].count = basicData.prizes[currentPrizeIndex].count + 1;
+          if(saveData()){
+            isLotteryRotate = false;
+            //更新剩余抽奖数目的数据显示
+            changePrize('reLottery');          
+            resetCard().then(res => {
+              //旋转开始
+              rotateAll()
+              document.getElementById('reLottery').innerHTML = '停止';
+            });
+          }
+        }else{
+          setLotteryStatus(true);
+          // 抽奖
+          lottery('reLottery');
+          document.getElementById('reLottery').innerHTML = '附加抽奖 1 次';
+          isLotteryRotate = true;
+        }
         break;
       // 导出抽奖结果
       case "save":
@@ -283,10 +318,9 @@ function bindEvent() {
             currentLuckys = [];
           });
           exportData();
-          // addQipao(`数据已保存到EXCEL中。`);
         });
         break;
-       // 导出抽奖结果
+       // 关闭抽奖结果展示
        case "close":
           resetCard().then(res => { });
         break;
@@ -577,27 +611,26 @@ function resetCard(duration = 500) {
 /**
  * 抽奖
  */
-function lottery() {
+function lottery(lotteryFlag) { //lotteryFlag : 'lottery','reLottery'
   rotateBall().then(() => {
     // 将之前的记录置空
     currentLuckys = [];
     selectedCardIndex = [];
+  
     // 当前同时抽取的数目,当前奖品抽完还可以继续抽，但是不记录数据
-    let perCount = EACH_COUNT[currentPrizeIndex],
+    let perCount,
       luckyData = basicData.luckyUsers[currentPrize.type],
       leftCount = basicData.leftUsers.length,
       leftPrizeCount = currentPrize.count - (luckyData ? luckyData.length : 0);
-
-    if (leftCount === 0) {
+      perCount = lotteryFlag == 'lottery' ? EACH_COUNT[currentPrizeIndex] : 1; //如果正常抽奖读取后台库获取抽奖个数，如果是重新抽奖则仅抽取 1 个
+    if (leftCount <= 0) {
       // addQipao("人员已抽完，现在重新设置所有人员可以进行二次抽奖！");
-      basicData.leftUsers = basicData.users;
-      leftCount = basicData.leftUsers.length;
+      console.info('人员已消耗完成')
+      return;
     }
 
     for (let i = 0; i < perCount; i++) {
       let luckyId = random(leftCount);
-      // console.info('----',basicData.leftUsers,leftCount)
-      // console.info('aa',luckyId,basicData.leftUsers.splice(luckyId, 1))
       currentLuckys.push(basicData.leftUsers.splice(luckyId, 1)[0]);
       leftCount--;
       leftPrizeCount--;
@@ -612,45 +645,61 @@ function lottery() {
         break;
       }
     }
-    // tweenTest.stop();
-    selectCard();    
+    selectCard(); 
+
+    let type = currentPrize.type,
+      curLucky = basicData.luckyUsers[type] || [];
+    curLucky = curLucky.concat(currentLuckys);
+    basicData.luckyUsers[type] = curLucky;
+    if (currentLuckys.length > 0) {
+      // todo by xc 添加数据保存机制，以免服务器挂掉数据丢失
+      return setData(type, currentLuckys);
+    }
+
   });
 }
 
 /**
  * 保存上一次的抽奖结果
  */
-function saveData() {
+function saveData(lotteryFlag) {
   if (!currentPrize) {
     //若奖品抽完，则不再记录数据，但是还是可以进行抽奖
-    return;
+    return false;
   }
 
   let type = currentPrize.type,
     curLucky = basicData.luckyUsers[type] || [];
 
-  curLucky = curLucky.concat(currentLuckys);
+  // curLucky = curLucky.concat(currentLuckys);
 
-  basicData.luckyUsers[type] = curLucky;
+  // basicData.luckyUsers[type] = curLucky;
 
-  if (currentPrize.count <= curLucky.length) {
-    currentPrizeIndex--;
-    if (currentPrizeIndex <= -1) {
-      currentPrizeIndex = 0;
+  if(lotteryFlag == 'lottery'){
+    if (currentPrize.count <= curLucky.length) {
+      currentPrizeIndex--;
+      if (currentPrizeIndex <= -1) {
+        let isReset = window.confirm("本轮抽奖一结束，是否要重置抽奖结果！");
+        if(isReset){
+          document.getElementById('reset').click();
+        }
+        return false;
+      }
+      currentPrize = basicData.prizes[currentPrizeIndex];
     }
-    currentPrize = basicData.prizes[currentPrizeIndex];
   }
 
-  if (currentLuckys.length > 0) {
-    // todo by xc 添加数据保存机制，以免服务器挂掉数据丢失
-    return setData(type, currentLuckys);
-  }
+  // if (currentLuckys.length > 0) {
+  //   // todo by xc 添加数据保存机制，以免服务器挂掉数据丢失
+  //   return setData(type, currentLuckys);
+  // }
   return Promise.resolve();
 }
 
-function changePrize() {
+function changePrize(lotteryFlag) {
   let luckys = basicData.luckyUsers[currentPrize.type];
-  let luckyCount = (luckys ? luckys.length : 0) + EACH_COUNT[currentPrizeIndex];
+  let addCount = lotteryFlag == 'lottery' ? EACH_COUNT[currentPrizeIndex] : 1;
+  let luckyCount = (luckys ? luckys.length : 0) + addCount;
   // 修改左侧prize的数目和百分比
   setPrizeData(currentPrizeIndex, luckyCount);
 }
@@ -728,22 +777,22 @@ function setData(type, data) {
   });
 }
 
-function setErrorData(data) {
-  return new Promise((resolve, reject) => {
-    window.AJAX({
-      url: baseUrl + "/errorData",
-      data: {
-        data
-      },
-      success() {
-        resolve();
-      },
-      error() {
-        reject();
-      }
-    });
-  });
-}
+// function setErrorData(data) {
+//   return new Promise((resolve, reject) => {
+//     window.AJAX({
+//       url: baseUrl + "/errorData",
+//       data: {
+//         data
+//       },
+//       success() {
+//         resolve();
+//       },
+//       error() {
+//         reject();
+//       }
+//     });
+//   });
+// }
 
 function exportData() {
   window.AJAX({

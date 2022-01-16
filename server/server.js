@@ -72,6 +72,11 @@ app.post("*", (req, res, next) => {
 // 获取之前设置的数据
 router.post("/getTempData", (req, res, next) => {
   getLeftUsers();
+  // console.info(curData,{
+  //   cfgData: cfg,
+  //   leftUsers: curData.leftUsers,
+  //   luckyData: luckyData
+  // })
   res.json({
     cfgData: cfg,
     leftUsers: curData.leftUsers,
@@ -180,7 +185,6 @@ router.post("/setUserData", (req, res, next) => {
     if (!result) {
       return res.send('员工不存在');
     }
-    console.info(avatarUrl)
     return User.update({
       avatarUrl: avatarUrl,
       status: 1,// 0 未签到、 1 已签到
@@ -244,7 +248,8 @@ function loadData() {
     for(let i=0; i<result.length; i++){
       let avatarUrl = result[i]['avatarUrl'];
       let name = result[i]['name'];
-      let ele = [avatarUrl, name];
+      let id = result[i]['id'];
+      let ele = [avatarUrl, name, id];
       data.push(ele)
     }
     curData.users = data;
@@ -267,20 +272,21 @@ function loadData() {
 function getLeftUsers() {
   //  记录当前已抽取的用户
   let lotteredUser = {};
+  console.info('luckyData',luckyData)
   for (let key in luckyData) {
     let luckys = luckyData[key];
     luckys.forEach(item => {
-      lotteredUser[item[0]] = true;
+      lotteredUser[item[2]] = true;
     });
   }
   // 记录当前已抽取但是不在线人员
   errorData.forEach(item => {
-    lotteredUser[item[0]] = true;
+    lotteredUser[item[2]] = true;
   });
 
   let leftUsers = Object.assign([], curData.users);
   leftUsers = leftUsers.filter(user => {
-    return !lotteredUser[user[0]];
+    return !lotteredUser[user[2]];
   });
   curData.leftUsers = leftUsers;
 }

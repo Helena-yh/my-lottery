@@ -8,31 +8,31 @@
  */
 const prizes = [
   {
-    type: 1,
+    type: 0,
     count: 2,
     text: "一等奖",
-    title: "",
+    title: "Mac Air",
     img: "./img/secrit.jpg"
   },
   {
-    type: 2,
+    type: 1,
     count: 4,
     text: "二等奖",
-    title: "",
-    img: "./img/1.png"
+    title: "小米电视机",
+    img: "./img/test.jpg"
   },
   {
-    type: 3,
+    type: 2,
     count: 6,
     text: "三等奖",
-    title: "",
+    title: "吸尘器 / 游戏机",
     img: "./img/2.png"
   },
   {
-    type: 4,
+    type: 3,
     count: 12,
     text: "四等奖",
-    title: "",
+    title: "云台 / 华为 WATCH",
     img: "./img/3.png"
   }
 ];
