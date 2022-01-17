@@ -11,28 +11,28 @@ const prizes = [
     type: 0,
     count: 2,
     text: "一等奖",
-    title: "Mac Air",
+    title: "",
     img: "./img/secrit.jpg"
   },
   {
     type: 1,
     count: 4,
     text: "二等奖",
-    title: "小米电视机",
+    title: "",
     img: "./img/test.jpg"
   },
   {
     type: 2,
     count: 6,
     text: "三等奖",
-    title: "吸尘器 / 游戏机",
+    title: "",
     img: "./img/2.png"
   },
   {
     type: 3,
     count: 12,
     text: "四等奖",
-    title: "云台 / 华为 WATCH",
+    title: "",
     img: "./img/3.png"
   }
 ];
@@ -40,7 +40,7 @@ const prizes = [
 /**
  * 一次抽取的奖品个数与prizes对应
  */
-const EACH_COUNT = [ 1, 2, 5, 6];
+const EACH_COUNT = [ 1, 2, 3, 6];
 
 /**
  * 卡片公司名称标识
