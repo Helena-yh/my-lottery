@@ -23,8 +23,8 @@ let TOTAL_CARDS,
   HIGHLIGHT_CELL = [],
   // 当前的比例
   Resolution = 1;
-// let baseUrl = 'https://tools.rongcloud.cn/lottery';
-let baseUrl = 'http://localhost:8090';
+let baseUrl = 'https://tools.rongcloud.cn/lottery';
+// let baseUrl = 'http://localhost:8090';
 let camera,
   scene,
   renderer,
@@ -54,7 +54,7 @@ let selectedCardIndex = [],
   //是否旋转
   isLotteryRotate = true; 
 
-let blockUserList = ['邹岳', '董晗'];
+let blockUserList = [];
 
 initAll();
 
@@ -254,28 +254,32 @@ function bindEvent() {
         break;
       // 重置
       case "reset":
-        let doREset = window.confirm(
-          "是否确认重置数据，重置后，当前已抽的奖项全部清空？"
-        );
-        if (!doREset) {
-          return;
-        }
-        reset();
-        // addQipao("重置所有数据，重新抽奖");
-        addHighlight();
-        resetCard();
-        // 重置所有数据
-        currentLuckys = [];
-        basicData.leftUsers = Object.assign([], basicData.users);
-        basicData.luckyUsers = {};
-        basicData.prizes = JSON.parse(basicData.originPrizes);
-        setPrizes(basicData.prizes);
+        if(isLotteryRotate){
+          let doREset = window.confirm(
+            "是否确认重置数据，重置后，当前已抽的奖项全部清空？"
+          );
+          if (!doREset) {
+            return;
+          }
+          reset();
+          // addQipao("重置所有数据，重新抽奖");
+          addHighlight();
+          resetCard();
+          // 重置所有数据
+          currentLuckys = [];
+          basicData.leftUsers = Object.assign([], basicData.users);
+          basicData.luckyUsers = {};
+          basicData.prizes = JSON.parse(basicData.originPrizes);
+          setPrizes(basicData.prizes);
 
-        currentPrizeIndex = basicData.prizes.length - 1;
-        currentPrize = JSON.parse(basicData.originPrizes)[currentPrizeIndex];
-        
-        resetPrize(currentPrizeIndex);
-        switchScreen("enter");
+          currentPrizeIndex = basicData.prizes.length - 1;
+          currentPrize = JSON.parse(basicData.originPrizes)[currentPrizeIndex];
+
+          resetPrize(currentPrizeIndex);
+          switchScreen("enter");
+        }else{
+          window.alert("请先停止当次抽奖在重置！");
+        }
         break;
       // 抽奖
       case "start":
@@ -640,7 +644,8 @@ function lottery(lotteryFlag) { //lotteryFlag : 'lottery','reLottery'
     let perCount,
       luckyData = basicData.luckyUsers[currentPrize.type],
       leftCount = basicData.leftUsers.length,
-      leftPrizeCount = currentPrize.count - (luckyData ? luckyData.length : 0);
+      // leftPrizeCount = currentPrize.count - (luckyData ? luckyData.length : 0);
+      leftPrizeCount = basicData.prizes[currentPrizeIndex].count - (luckyData ? luckyData.length : 0);
       perCount = lotteryFlag == 'lottery' ? EACH_COUNT[currentPrizeIndex] : 1; //如果正常抽奖读取后台库获取抽奖个数，如果是重新抽奖则仅抽取 1 个
     if (leftCount <= 0) {
       // addQipao("人员已抽完，现在重新设置所有人员可以进行二次抽奖！");
@@ -691,7 +696,7 @@ function saveData(lotteryFlag) {
     curLucky = basicData.luckyUsers[type] || [];
 
   if(lotteryFlag == 'lottery'){
-    if (currentPrize.count <= curLucky.length) {
+    if (basicData.prizes[currentPrizeIndex].count <= curLucky.length) {
       currentPrizeIndex--;
       if (currentPrizeIndex <= -1) {
         let isReset = window.confirm("本轮抽奖一结束，是否要重置抽奖结果！");
