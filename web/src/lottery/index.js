@@ -23,8 +23,8 @@ let TOTAL_CARDS,
   HIGHLIGHT_CELL = [],
   // 当前的比例
   Resolution = 1;
-let baseUrl = 'https://tools.rongcloud.cn/lottery';
-// let baseUrl = 'http://localhost:8090';
+// let baseUrl = 'https://tools.rongcloud.cn/lottery';
+let baseUrl = 'http://localhost:8090';
 let camera,
   scene,
   renderer,
@@ -38,7 +38,8 @@ let camera,
 
 let selectedCardIndex = [],
   basicData = {
-    prizes: [], //奖品信息
+    originPrizes: [], //远端奖品信息
+    prizes: [], //奖品信息 -- 附加抽奖会改变
     users: [], //所有人员
     luckyUsers: {}, //已中奖人员
     leftUsers: [] //未中奖人员
@@ -68,6 +69,7 @@ function initAll() {
       prizes = data.cfgData.prizes;
       EACH_COUNT = data.cfgData.EACH_COUNT;
       HIGHLIGHT_CELL = createHighlight();
+      basicData.originPrizes = JSON.stringify(prizes);
       basicData.prizes = prizes;
       setPrizes(prizes);
 
@@ -101,7 +103,11 @@ function initAll() {
         currentPrize = basicData.prizes[currentPrizeIndex];
         break;
       }
-
+      if(!currentPrizeIndex){
+        currentPrizeIndex = 0;
+        currentPrize = basicData.prizes[currentPrizeIndex]
+      }
+      // currentPrizeIndex = currentPrizeIndex ? currentPrizeIndex : 0;
       showPrizeList(currentPrizeIndex);
       let curLucks = basicData.luckyUsers[currentPrize.type];
       setPrizeData(currentPrizeIndex, curLucks ? curLucks.length : 0, true, data.luckyData);
@@ -254,6 +260,7 @@ function bindEvent() {
         if (!doREset) {
           return;
         }
+        reset();
         // addQipao("重置所有数据，重新抽奖");
         addHighlight();
         resetCard();
@@ -261,11 +268,13 @@ function bindEvent() {
         currentLuckys = [];
         basicData.leftUsers = Object.assign([], basicData.users);
         basicData.luckyUsers = {};
-        currentPrizeIndex = basicData.prizes.length - 1;
-        currentPrize = basicData.prizes[currentPrizeIndex];
+        basicData.prizes = JSON.parse(basicData.originPrizes);
+        setPrizes(basicData.prizes);
 
+        currentPrizeIndex = basicData.prizes.length - 1;
+        currentPrize = JSON.parse(basicData.originPrizes)[currentPrizeIndex];
+        
         resetPrize(currentPrizeIndex);
-        reset();
         switchScreen("enter");
         break;
       // 抽奖
@@ -681,10 +690,6 @@ function saveData(lotteryFlag) {
   let type = currentPrize.type,
     curLucky = basicData.luckyUsers[type] || [];
 
-  // curLucky = curLucky.concat(currentLuckys);
-
-  // basicData.luckyUsers[type] = curLucky;
-
   if(lotteryFlag == 'lottery'){
     if (currentPrize.count <= curLucky.length) {
       currentPrizeIndex--;
@@ -699,10 +704,6 @@ function saveData(lotteryFlag) {
     }
   }
 
-  // if (currentLuckys.length > 0) {
-  //   // todo by xc 添加数据保存机制，以免服务器挂掉数据丢失
-  //   return setData(type, currentLuckys);
-  // }
   return Promise.resolve();
 }
 
